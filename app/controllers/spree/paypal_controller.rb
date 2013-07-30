@@ -27,6 +27,16 @@ module Spree
           }
         }
       end
+      # Because PayPal doesn't accept $0 items at all.
+      # See #10
+      items.map! do |item|
+        item[:Amount][:value] = 0.01 if item[:Amount][:value] == 0
+        item
+      end
+
+      total = current_order.adjustments.sum(:amount) + items.sum { |i| i[:Amount][:value] }
+      binding.pry
+
       pp_request = provider.build_set_express_checkout({
         :SetExpressCheckoutRequestDetails => {
           :ReturnURL => confirm_paypal_url(:payment_method_id => params[:payment_method_id]),

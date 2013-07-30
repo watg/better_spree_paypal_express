@@ -81,7 +81,49 @@ describe "PayPal", :js => true do
     within("#miniCart") do
       page.should have_content("$5 off")
       page.should have_content("$10 on")
+    end
+  end
 
+  # Regression test for #10
+  context "sets $0 items to costing $0.01" do
+    before do
+      # If we didn't do this then the order would be free and skip payment altogether
+      calculator = Spree::ShippingMethod.first.calculator
+      calculator.preferred_amount = 10
+      calculator.save
+    end
+
+    specify do
+      visit spree.root_path
+      click_link 'iPad'
+      click_button 'Add To Cart'
+      # TODO: Is there a better way to find this current order?
+      order = Spree::Order.last
+      order.line_items.last.update_attribute(:price, 0)
+      click_button 'Checkout'
+      within("#guest_checkout") do
+        fill_in "Email", :with => "test@example.com"
+        click_button 'Continue'
+      end
+      within("#billing") do
+        fill_in "First Name", :with => "Test"
+        fill_in "Last Name", :with => "User"
+        fill_in "Street Address", :with => "1 User Lane"
+        # City, State and ZIP must all match for PayPal to be happy
+        fill_in "City", :with => "Adamsville"
+        select "United States of America", :from => "order_bill_address_attributes_country_id"
+        select "Alabama", :from => "order_bill_address_attributes_state_id"
+        fill_in "Zip", :with => "35005"
+        fill_in "Phone", :with => "555-AME-RICA"
+      end
+      click_button "Save and Continue"
+      # Delivery step doesn't require any action
+      click_button "Save and Continue"
+      find("#paypal_button").click
+      binding.pry
+      within("#miniCart") do
+        binding.pry
+      end
     end
   end
 
