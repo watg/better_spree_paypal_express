@@ -58,5 +58,14 @@ describe Spree::Gateway::PayPalExpress do
       provider.should_receive(:do_express_checkout_payment).and_return(response)
       lambda { payment.purchase! }.should raise_error(Spree::Core::GatewayError, "An error goes here.")
     end
+
+    it "refund" do
+      response = double('pp_response', :success? => true)
+      allow(provider).to receive(:refund_transaction).and_return(response)
+
+      expect(payment).to receive(:update_column).with(:amount, 4.0)
+
+      gateway.refund(payment, 6.0)
+    end
   end
 end
