@@ -9,7 +9,7 @@ module Spree
       tax_adjustments = order.all_adjustments.tax.to_a
       shipping_adjustments = order.all_adjustments.shipping.to_a
 
-      order.all_adjustments.eligible.each do |adjustment|
+      order.all_adjustments.each do |adjustment|
         next if (tax_adjustments + shipping_adjustments).include?(adjustment)
         items << {
           :Name => adjustment.label,
