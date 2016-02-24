@@ -46,7 +46,7 @@ module Spree
 
     def confirm
       order = current_order || raise(ActiveRecord::RecordNotFound)
-      order.payments.create!({
+      payment = order.payments.new({
         :source => Spree::PaypalExpressCheckout.create({
           :token => params[:token],
           :payer_id => params[:PayerID]
@@ -54,6 +54,7 @@ module Spree
         :amount => order.total,
         :payment_method => payment_method
       })
+      payment.save_with_callbacks!
       order.next
       if order.complete?
         session[:order_id] = nil
