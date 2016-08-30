@@ -6,7 +6,9 @@ Spree::Admin::PaymentsController.class_eval do
         redirect_to admin_order_payment_path(@order, @payment)
       end
     elsif request.post?
-      response = @payment.payment_method.refund(@payment, params[:refund_amount])
+      response = @order.update_locked! do
+        @payment.payment_method.refund(@payment, params[:refund_amount])
+      end
       if response.success?
         flash[:success] = Spree.t(:refund_successful, :scope => 'paypal')
         redirect_to admin_order_payments_path(@order)
