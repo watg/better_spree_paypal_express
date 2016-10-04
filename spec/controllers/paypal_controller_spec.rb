@@ -1,3 +1,4 @@
+
 describe Spree::PaypalController do
 
   # Regression tests for #55
@@ -24,7 +25,7 @@ describe Spree::PaypalController do
     context "cancel" do
       it "raises ActiveRecord::RecordNotFound" do
         expect(lambda { get :cancel, :use_route => :spree }).
-          to raise_error(ActiveRecord::RecordNotFound)
+          to raise_error(ActionController::RoutingError)
       end
     end
   end

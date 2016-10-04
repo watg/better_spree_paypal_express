@@ -69,11 +69,15 @@ module Spree
 
     def cancel
       flash[:notice] = Spree.t('flash.cancel', :scope => 'paypal')
-      order = current_order || raise(ActiveRecord::RecordNotFound)
+      order = current_order || not_found
       redirect_to checkout_state_path(order.state, paypal_cancel_token: params[:token])
     end
 
     private
+
+    def not_found
+      raise ActionController::RoutingError.new("Paypal: Not Found")
+    end
 
     def line_item(item)
       {
