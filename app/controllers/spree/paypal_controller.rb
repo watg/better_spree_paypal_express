@@ -3,7 +3,7 @@ module Spree
     ssl_allowed
 
     def express
-      order = current_order || raise(ActiveRecord::RecordNotFound)
+      order = current_order || not_found
       items = order.line_items.map(&method(:line_item))
 
       tax_adjustments = order.all_adjustments.tax.to_a
@@ -45,7 +45,7 @@ module Spree
     end
 
     def confirm
-      order = current_order || raise(ActiveRecord::RecordNotFound)
+      order = current_order || not_found
       payment = order.payments.new({
         :source => Spree::PaypalExpressCheckout.create({
           :token => params[:token],
