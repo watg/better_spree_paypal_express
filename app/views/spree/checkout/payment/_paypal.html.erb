@@ -1,4 +1,16 @@
-<%= link_to(image_tag("https://www.paypalobjects.com/webstatic/en_US/i/btn/png/gold-pill-paypal-26px.png"), paypal_express_url(:payment_method_id => payment_method.id), :method => :post, :id => "paypal_button") %>
+<div class="row paypal-form" id="paypal-form">
+  <div class="fieldset">
+    <div class="small-12 large-7 columns description">
+    <p><span><%=Spree.t(:paypal_redirect)%></span></p>
+    </div>
+    <div class="small-12 large-5 columns">
+      <div class="form-buttons" data-hook="buttons">
+        <%= link_to(Spree.t(:paypal_submit), paypal_express_url(:payment_method_id => payment_method.id), :method => :post, class: "button primary", :id => "paypal_button") %>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script>
   var setPaypalExpress = function(e) {
